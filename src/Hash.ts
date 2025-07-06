@@ -35,7 +35,6 @@ export class Hash<T extends Record<string, any> = Record<string, any>> {
 	}
 
 	#reflectHashToParams() {
-		console.log('fuck');
 		const hash = window.location.hash.startsWith('#')
 			? window.location.hash.slice(1)
 			: window.location.hash;
