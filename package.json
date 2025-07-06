@@ -1,0 +1,49 @@
+{
+	"name": "@vdegenne/router",
+	"version": "0.1.0",
+	"description": "router helpers",
+	"type": "module",
+	"exports": {
+		".": {
+			"import": "./lib/index.js",
+			"types": "./lib/index.d.ts"
+		},
+		"./Router.js": {
+			"import": "./lib/Router.js",
+			"types": "./lib/Router.d.ts"
+		},
+		"./Hash.js": {
+			"import": "./lib/Hash.js",
+			"types": "./lib/Hash.d.ts"
+		}
+	},
+	"scripts": {
+		"build": "wireit"
+	},
+	"files": [
+		"./lib"
+	],
+	"devDependencies": {
+		"@types/redux": "^3.6.31",
+		"pwa-helpers": "^0.9.1",
+		"redux": "^5.0.1",
+		"typescript": "^5.8.3",
+		"wireit": "^0.14.12"
+	},
+	"peerDependencies": {
+		"pwa-helpers": "^0.9.1"
+	},
+	"wireit": {
+		"build": {
+			"command": "tsc --pretty",
+			"clean": "if-file-deleted",
+			"files": [
+				"./tsconfig.json",
+				"./src"
+			],
+			"output": [
+				"./lib"
+			]
+		}
+	}
+}
