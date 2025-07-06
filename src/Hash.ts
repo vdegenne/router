@@ -12,7 +12,7 @@ export class Hash<T extends Record<string, any> = Record<string, any>> {
 		if (value !== undefined) {
 			this.#params[param] = value;
 			this.#reflectParamsToHash();
-			return value;
+			// return value;
 		} else {
 			return this.#params[param];
 		}
@@ -22,7 +22,7 @@ export class Hash<T extends Record<string, any> = Record<string, any>> {
 		return {...this.#params};
 	}
 
-	has(param: string) {
+	has(param: keyof T) {
 		return this.$(param) !== undefined;
 	}
 
