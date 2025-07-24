@@ -49,10 +49,12 @@ export class Hash<T extends Record<string, any> = Record<string, any>> {
 		for (const part of parts) {
 			if (part.includes('=')) {
 				const [key, val] = part.split('=');
-				newParams[key as keyof T] = this.#coerce(val);
+				newParams[decodeURIComponent(key) as keyof T] = this.#coerce(
+					decodeURIComponent(val),
+				);
 			} else {
 				// key without '=', treat as boolean true
-				newParams[part as keyof T] = /**/ true /**/ as any;
+				newParams[decodeURIComponent(part) as keyof T] = true as any;
 			}
 		}
 
