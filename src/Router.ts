@@ -25,15 +25,15 @@ export class Router {
 		this.#newPromise(); // Just to make sure an initial promise is available.
 		installRouter(async (location, event) => {
 			if (!this.#firstCall) {
-				this.#navigationPromiseWithResolvers?.reject(); // Reject just in case, does nothing if already resolved.
+				// this.#navigationPromiseWithResolvers?.reject(); // Reject just in case, does nothing if already resolved.
 				this.#newPromise();
 			} else {
 				this.#firstCall = false;
 			}
 
-			if (event && event.type === 'popstate') {
-				await waitForNextHashChange();
-			}
+			// if (event && event.type === 'popstate') {
+			// 	await waitForNextHashChange();
+			// }
 
 			await callback({location, event /*hash: this.#hash*/});
 			this.#navigationPromiseWithResolvers.resolve();

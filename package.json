@@ -1,6 +1,6 @@
 {
 	"name": "@vdegenne/router",
-	"version": "0.1.3",
+	"version": "0.1.4",
 	"description": "router helpers",
 	"type": "module",
 	"exports": {
