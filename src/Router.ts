@@ -44,12 +44,12 @@ export class Router {
 	}
 }
 
-function waitForNextHashChange(): Promise<void> {
-	return new Promise((resolve) => {
-		const handler = () => {
-			window.removeEventListener('hashchange', handler);
-			setTimeout(resolve, 0); // ensure all listeners finished
-		};
-		window.addEventListener('hashchange', handler);
-	});
-}
+// function waitForNextHashChange(): Promise<void> {
+// 	return new Promise((resolve) => {
+// 		const handler = () => {
+// 			window.removeEventListener('hashchange', handler);
+// 			setTimeout(resolve, 0); // ensure all listeners finished
+// 		};
+// 		window.addEventListener('hashchange', handler);
+// 	});
+// }
