@@ -5,6 +5,7 @@ type LocationUpdateCallback = (params: {
 	location: Location;
 	event: Event | null;
 	// hash: Hash;
+	parts: string[];
 }) => void | Promise<void>;
 
 export class Router {
@@ -35,7 +36,9 @@ export class Router {
 			// 	await waitForNextHashChange();
 			// }
 
-			await callback({location, event /*hash: this.#hash*/});
+			const parts = location.pathname.replaceAll(/^\/+|\/+$/g, '').split('/');
+
+			await callback({location, event /*hash: this.#hash*/, parts});
 			this.#navigationPromiseWithResolvers.resolve();
 		});
 	}
