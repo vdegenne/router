@@ -1,9 +1,45 @@
+interface HashOptions {
+	/**
+	 * When you change a value (e.g. `hash.$('foo', 'bar')`)
+	 * Does it directly reflect in the url's hash?
+	 * If set to false, you can call `reflectParamsToHash` manually.
+	 *
+	 * @default true
+	 */
+	paramsToHashReflect: boolean;
+
+	/**
+	 * When the hash changes in the url, should the new values reflect in this instance?
+	 * If true, the object is listening `hashchange` event and will call
+	 * `reflectHashToParams()` in the background.
+	 *
+	 * @default false
+	 */
+	hashToParamsReflect: boolean;
+
+	/**
+	 * Whether to encode when reflecting params to hash
+	 *
+	 * @default true
+	 */
+	encode: boolean;
+}
+
 export class Hash<T extends Record<string, any> = Record<string, any>> {
+	#options: HashOptions;
 	#params: Partial<T> = {};
 
-	constructor() {
-		window.addEventListener('hashchange', () => this.#reflectHashToParams());
-		this.#reflectHashToParams();
+	constructor(options?: Partial<HashOptions>) {
+		this.#options = {
+			paramsToHashReflect: true,
+			hashToParamsReflect: false,
+			encode: true,
+			...options,
+		};
+		if (this.#options.hashToParamsReflect) {
+			window.addEventListener('hashchange', () => this.reflectHashToParams());
+		}
+		this.reflectHashToParams();
 	}
 
 	$(param: keyof T): T[keyof T] | undefined;
@@ -11,8 +47,9 @@ export class Hash<T extends Record<string, any> = Record<string, any>> {
 	$(param: keyof T, value?: T[keyof T]) {
 		if (value !== undefined) {
 			this.#params[param] = value;
-			this.#reflectParamsToHash();
-			// return value;
+			if (this.#options.paramsToHashReflect) {
+				this.reflectParamsToHash();
+			}
 		} else {
 			return this.#params[param];
 		}
@@ -34,15 +71,13 @@ export class Hash<T extends Record<string, any> = Record<string, any>> {
 		return value;
 	}
 
-	#reflectHashToParams() {
-		const hash = window.location.hash.startsWith('#')
-			? window.location.hash.slice(1)
-			: window.location.hash;
+	reflectHashToParams() {
+		const hash = window.location.hash.slice(1);
+
 		const newParams: Partial<T> = {};
 
 		if (!hash) {
-			this.#params = newParams;
-			return;
+			return (this.#params = newParams);
 		}
 
 		const parts = hash.split('&');
@@ -59,11 +94,9 @@ export class Hash<T extends Record<string, any> = Record<string, any>> {
 		}
 
 		this.#params = newParams;
-		this.#updateResolvers.forEach((r) => r());
-		this.#updateResolvers = [];
 	}
 
-	#reflectParamsToHash() {
+	reflectParamsToHash() {
 		const parts: string[] = [];
 		for (const key in this.#params) {
 			const value = this.#params[key];
@@ -76,18 +109,13 @@ export class Hash<T extends Record<string, any> = Record<string, any>> {
 				// key with empty string value
 				parts.push(`${key}=`);
 			} else if (value !== undefined && value !== false && value !== null) {
-				parts.push(`${key}=${encodeURIComponent(String(value))}`);
+				const _value = this.#options.encode
+					? encodeURIComponent(String(value))
+					: String(value);
+				parts.push(`${key}=${_value}`);
 			}
 			// skip false, null, undefined
 		}
 		window.location.hash = parts.join('&');
-	}
-
-	#updateResolvers: (() => void)[] = [];
-
-	waitForUpdate() {
-		return new Promise<void>((resolve) => {
-			this.#updateResolvers.push(resolve);
-		});
 	}
 }

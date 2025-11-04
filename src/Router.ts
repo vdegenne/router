@@ -1,11 +1,11 @@
-import {installRouter} from 'pwa-helpers';
 import {Hash} from './Hash.js';
+import {installRouter} from './installRouter.js';
 
 type LocationUpdateCallback = (params: {
 	location: Location;
 	event: Event | null;
 	// hash: Hash;
-	parts: string[];
+	parts: Readonly<string[]>;
 }) => void | Promise<void>;
 
 export class Router {
@@ -18,6 +18,18 @@ export class Router {
 	#newPromise() {
 		this.#navigationPromiseWithResolvers = Promise.withResolvers();
 	}
+	/**
+	 * !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+	 * !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+	 * !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+	 * !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+	 * !! Just so you know, Anchor clicks won't trigger 'hashchange' events........
+	 * !! even if the href explicitely changes the hash !!!!!!!!!!!!!!!!!!!!!!!!!!!
+	 * !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+	 * !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+	 * !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+	 * !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+	 */
 	constructor(
 		protected callback: LocationUpdateCallback,
 		// hash?: Hash<any>,
@@ -36,11 +48,15 @@ export class Router {
 			// 	await waitForNextHashChange();
 			// }
 
-			const parts = location.pathname.replaceAll(/^\/+|\/+$/g, '').split('/');
+			const parts = this.parts;
 
 			await callback({location, event /*hash: this.#hash*/, parts});
 			this.#navigationPromiseWithResolvers.resolve();
 		});
+	}
+
+	get parts(): Readonly<string[]> {
+		return window.location.pathname.split(/\//).filter((i) => i);
 	}
 }
 
