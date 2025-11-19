@@ -45,7 +45,7 @@ export class Hash<T extends Record<string, any> = Record<string, any>> {
 	$(param: keyof T): T[keyof T] | undefined;
 	$(param: keyof T, value: T[keyof T]): T[keyof T];
 	$(param: keyof T, value?: T[keyof T]) {
-		if (value !== undefined) {
+		if (arguments.length === 2) {
 			this.#params[param] = value;
 			if (this.#options.paramsToHashReflect) {
 				this.reflectParamsToHash();
